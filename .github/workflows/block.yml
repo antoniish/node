@@ -2,46 +2,58 @@ name: Block SQL Files Unless Approved
 
 on:
   pull_request:
-    types: [opened, edited, synchronize]
+    branches:
+      - main
+    types: [opened, edited, synchronize, reopened]
 
 jobs:
-  check-sql-files:
+  block-sql:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout PR
+      - name: Checkout PR code
         uses: actions/checkout@v4
 
-      - name: Fetch base branch for comparison
-        run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
 
-      - name: Check for .sql files in the PR
-        id: sql_check
+      - name: Check for .sql files
+        id: check_sql
         run: |
-          CHANGED_SQL_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} HEAD | grep '\.sql$' || true)
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} HEAD)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          SQL_FILES=$(echo "$CHANGED_FILES" | grep '\.sql$' || true)
           echo "SQL_FILES<<EOF" >> $GITHUB_ENV
-          echo "$CHANGED_SQL_FILES" >> $GITHUB_ENV
+          echo "$SQL_FILES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          if [[ -n "$CHANGED_SQL_FILES" ]]; then
+
+          if [[ -n "$SQL_FILES" ]]; then
             echo "found_sql=true" >> $GITHUB_ENV
           else
             echo "found_sql=false" >> $GITHUB_ENV
+          fi
 
-      - name: Check if SQL files are allowed in PR body
-        id: pr_body_check
+      - name: Check PR description for approval task
+        id: check_task
         run: |
-          PR_BODY="${{ github.event.pull_request.body }}"
-          echo "PR_BODY: $PR_BODY"
-          if [[ "$PR_BODY" == *"- [x] Allow SQL files"* ]]; then
+          BODY="${{ github.event.pull_request.body }}"
+          echo "PR body:"
+          echo "$BODY"
+
+          if [[ "$BODY" == *"- [x] Allow SQL files"* ]]; then
             echo "allow_sql=true" >> $GITHUB_ENV
           else
             echo "allow_sql=false" >> $GITHUB_ENV
+          fi
 
-      - name: Fail if SQL files are found but not approved
+      - name: Block merge if .sql files are found and task not approved
         run: |
+          echo "found_sql=$found_sql"
+          echo "allow_sql=$allow_sql"
+          
           if [[ "$found_sql" == "true" && "$allow_sql" == "false" ]]; then
-            echo "❌ SQL files detected, but approval task is not checked."
-            echo "Please check '- [x] Allow SQL files' in the PR description if this is intentional."
+            echo "❌ SQL files detected but 'Allow SQL files' task is not checked in the PR."
             exit 1
-          else
-            echo "✅ Check passed."
+          fi
