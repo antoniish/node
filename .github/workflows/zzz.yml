@@ -1,4 +1,4 @@
-name: Block until SQL migration task is approved
+name: zzz-name
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
     types: [opened, edited, synchronize, reopened]
 
 jobs:
-  sql-migration-check:
+  ccc-zzz:
     runs-on: ubuntu-latest
 
     steps:
