@@ -38,7 +38,6 @@ jobs:
           echo "PR body:"
           echo "$BODY"
 
-          echo "skip_check=true" >> $GITHUB_ENV
           echo "allow_sql=true" >> $GITHUB_ENV
           if [[ "$BODY" == *"- [ ] All DB migrations"* ]]; then
             echo "allow_sql=false" >> $GITHUB_ENV
@@ -50,7 +49,7 @@ jobs:
           echo "allow_sql=$allow_sql"
           echo "skip_check=$skip_check"
           
-          if [[ "$skip_check" == "false" && "$found_sql" == "true" && "$allow_sql" == "false" ]]; then
+          if [[ "$found_sql" == "true" && "$allow_sql" == "false" ]]; then
             echo "'Allow SQL files' task is not checked in the PR."
             exit 1
           fi
