@@ -1,4 +1,4 @@
-name: Block until SQL migration task is approved
+name: zzz-name
 
 on:
   pull_request:
