@@ -36,14 +36,14 @@ jobs:
           BODY="${{ github.event.pull_request.body }}"
           echo "PR body:"
           echo "$BODY"
+
+          echo "allow_sql=false" >> $GITHUB_ENV
+          echo "skip_check=false" >> $GITHUB_ENV
           if [[ "$BODY" != *"Allow SQL"* ]]; then
             echo "No valid body"
-            echo "skip_check=false" >> $GITHUB_ENV
-          elif [[ "$BODY" == *"- [x] Allow SQL files"* ]]; then
             echo "skip_check=true" >> $GITHUB_ENV
+          elif [[ "$BODY" == *"- [x] Allow SQL files"* ]]; then
             echo "allow_sql=true" >> $GITHUB_ENV
-          else
-            echo "allow_sql=false" >> $GITHUB_ENV
           fi
 
       - name: Block merge if SQL files are found and task not approved
