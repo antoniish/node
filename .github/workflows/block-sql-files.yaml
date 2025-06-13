@@ -1,4 +1,4 @@
-# name: Block SQL Files Unless Approved
+# name: Old Block SQL Files Unless Approved
 
 # on:
 #   pull_request:
@@ -44,4 +44,4 @@
 #             echo "Please check '- [x] Allow SQL files' in the PR description if this is intentional."
 #             exit 1
 #           else
-#             echo "✅ Check passed."
+#           echo "✅ Check passed."
