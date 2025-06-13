@@ -2,9 +2,7 @@ name: Block until SQL migration task is approved
 
 on:
   pull_request:
-    branches:
-      - staging
-      - master
+    branches: ["main"]
     types: [opened, edited, synchronize, reopened]
 
 jobs:
