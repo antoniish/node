@@ -1,4 +1,4 @@
-name: Old Block SQL Files Unless Approved
+# name: Old Block SQL Files Unless Approved
 
 # on:
 #   pull_request:
