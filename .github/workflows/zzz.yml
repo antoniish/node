@@ -40,7 +40,7 @@ jobs:
 
           echo "skip_check=true" >> $GITHUB_ENV
           echo "allow_sql=true" >> $GITHUB_ENV
-          if [[ "$BODY" == *"- [] All DB migrations"* ]]; then
+          if [[ "$BODY" == *"- [ ] All DB migrations"* ]]; then
             echo "allow_sql=false" >> $GITHUB_ENV
           fi
 
