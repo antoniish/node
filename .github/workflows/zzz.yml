@@ -9,7 +9,7 @@ on:
     types: [opened, edited, synchronize, reopened]
 
 jobs:
-  ccc-zzz:
+  sql-migration-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,9 +38,9 @@ jobs:
           echo "PR body:"
           echo "$BODY"
 
-          if [[ "$BODY" == *"- [x] Allow SQL files"* ]]; then
-            echo "allow_sql=true" >> $GITHUB_ENV
-          else
+          echo "skip_check=true" >> $GITHUB_ENV
+          echo "allow_sql=true" >> $GITHUB_ENV
+          if [[ "$BODY" == *"- [] All DB migrations"* ]]; then
             echo "allow_sql=false" >> $GITHUB_ENV
           fi
 
@@ -48,8 +48,9 @@ jobs:
         run: |
           echo "found_sql=$found_sql"
           echo "allow_sql=$allow_sql"
+          echo "skip_check=$skip_check"
           
-          if [[ "$found_sql" == "true" && "$allow_sql" == "false" ]]; then
+          if [[ "$skip_check" == "false" && "$found_sql" == "true" && "$allow_sql" == "false" ]]; then
             echo "'Allow SQL files' task is not checked in the PR."
             exit 1
           fi
