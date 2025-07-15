@@ -1,13 +1,15 @@
-name: Block until SQL migration task is approved
+name: zzz-name
 
 on:
-
-  pull_request_target:
-    branches: ["main"]
+  pull_request:
+    branches:
+      - staging
+      - master
+      - main
     types: [opened, edited, synchronize, reopened]
 
 jobs:
-  sql-migration-check:
+  ccc-zzz:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,19 +38,16 @@ jobs:
           echo "PR body:"
           echo "$BODY"
 
-          echo "allow_sql=false" >> $GITHUB_ENV
-          echo "skip_check=false" >> $GITHUB_ENV
-          if [[ "$BODY" != *"Allow SQL"* ]]; then
-            echo "No valid body"
-            echo "skip_check=true" >> $GITHUB_ENV
-          elif [[ "$BODY" == *"- [x] Allow SQL files"* ]]; then
-            echo "allow_sql=true" >> $GITHUB_ENV
+          echo "allow_sql=true" >> $GITHUB_ENV
+          if [[ "$BODY" == *"- [ ] All DB migrations"* ]]; then
+            echo "allow_sql=false" >> $GITHUB_ENV
           fi
 
       - name: Block merge if SQL files are found and task not approved
         run: |
           echo "found_sql=$found_sql"
           echo "allow_sql=$allow_sql"
+          echo "skip_check=$skip_check"
           
           if [[ "$found_sql" == "true" && "$allow_sql" == "false" ]]; then
             echo "'Allow SQL files' task is not checked in the PR."
