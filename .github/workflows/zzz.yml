@@ -1,12 +1,6 @@
 name: zzz-name
 
 on:
-  pull_request:
-    branches:
-      - staging
-      - master
-      - main
-    types: [opened, edited, synchronize, ready_for_review]
   pull_request_target:
     branches:
       - staging
