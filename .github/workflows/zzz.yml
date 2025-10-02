@@ -43,7 +43,7 @@ jobs:
           CUSTOM_BODY="SIMPLE CUSTOM BODY 123qwe"
 
           if [[ -n "$BODY" ]]; then 
-            exit 11;
+            # exit 11;
           fi
           gh pr edit "$PR_NUMBER" --body "$CUSTOM_BODY"
 
