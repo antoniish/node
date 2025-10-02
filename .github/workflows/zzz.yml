@@ -3,6 +3,7 @@ name: zzz-name
 on:
   pull_request_target:
     branches:
+      - main
       - staging
       - master
     types: [opened, edited, synchronize, reopened]
