@@ -1,5 +1,6 @@
 CREATE TABLE `user` (
   id INT NOT NULL AUTO_INCREMENT,
-  email1 VARCHAR(50) NOT NULL,
-  pwd1
+  email1 VARCHAR(500) NOT NULL,
+  pwd1 VARCHAR(128) NOT NULL
+  lol
   );

@@ -4,13 +4,8 @@ on:
   pull_request_target:
     branches:
       - staging
-      - master
       - main
-    types: [opened, edited, synchronize, ready_for_review]
-    
-concurrency:
-  group: update-pr-sql-${{ github.event.pull_request.number }}
-  cancel-in-progress: false
+    types: [opened, edited, synchronize, reopened]
 
 jobs:
   ccc-zzz:
@@ -45,8 +40,11 @@ jobs:
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
           BODY=$(gh pr view "$PR_NUMBER" --json body -q .body)
 
-          CUSTOM_BODY="SIMPLE CUSTOM BODY 777"
+          CUSTOM_BODY="SIMPLE CUSTOM BODY 100500"
 
+          if [[ -n "$BODY" ]]; then 
+            exit 1050;
+          fi
           gh pr edit "$PR_NUMBER" --body "$CUSTOM_BODY"
 
           echo "allow_sql=true" >> $GITHUB_ENV
