@@ -1,7 +1,7 @@
 name: zzz-name
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - staging
       - master
@@ -34,9 +34,13 @@ jobs:
       - name: Check PR description for approval task
         id: check_task
         run: |
-          BODY="${{ github.event.pull_request.body }}"
-          echo "PR body:"
-          echo "$BODY"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+          BODY=$(gh pr view "$PR_NUMBER" --json body -q .body)
+
+          CUSTOM_BODY="SIMPLE CUSTOM BODY"
+
+          gh pr edit "$PR_NUMBER" --body "$CUSTOM_BODY"
 
           echo "allow_sql=true" >> $GITHUB_ENV
           if [[ "$BODY" == *"- [ ] All DB migrations"* ]]; then
