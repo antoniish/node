@@ -13,10 +13,6 @@ on:
       - master
       - main
     types: [opened, edited, synchronize, ready_for_review]
-    
-concurrency:
-  group: update-pr-sql-${{ github.event.pull_request.number }}
-  cancel-in-progress: false
 
 jobs:
   ccc-zzz:
