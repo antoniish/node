@@ -23,6 +23,7 @@ jobs:
         id: check_sql
         run: |
           CHANGED_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} HEAD)
+          echo "$CHANGED_FILES"
           SQL_FILES=$(echo "$CHANGED_FILES" | grep '\.sql$' || true)
 
           if [[ -n "$SQL_FILES" ]]; then
