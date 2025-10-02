@@ -4,14 +4,13 @@ on:
   pull_request_target:
     branches:
       - staging
-      - main
+      - master
     types: [opened, edited, synchronize, reopened]
 
 jobs:
   ccc-zzz:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
+
     steps:
       - name: Checkout PR code
         uses: actions/checkout@v4
@@ -31,34 +30,46 @@ jobs:
             echo "found_sql=false" >> $GITHUB_ENV
           fi
 
-      - name: Check PR description for approval task
-        id: check_task
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Prepare PR Body
         run: |
           PR_NUMBER="${{ github.event.pull_request.number }}"
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
-          BODY=$(gh pr view "$PR_NUMBER" --json body -q .body)
+          BODY=$(gh pr view "$PR_NUMBER" --json body -q .body)          
 
-          CUSTOM_BODY="SIMPLE CUSTOM BODY 100500"
+          if [[ "$found_sql" == "true" && "$BODY" != *"# Checklist"* ]]; then
+            CUSTOM_BODY=$(cat <<EOF
+          $BODY
 
-          if [[ -n "$BODY" ]]; then 
-            exit 1050;
+          --------------
+          ### Checklist            
+          - [ ] DB migrations were applied.
+          EOF
+          )
+
+            gh pr edit "$PR_NUMBER" --body "$CUSTOM_BODY"
           fi
-          gh pr edit "$PR_NUMBER" --body "$CUSTOM_BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check PR description for approval task
+        id: check_pr_description
+        run: |
           echo "allow_sql=true" >> $GITHUB_ENV
-          if [[ "$BODY" == *"- [ ] All DB migrations"* ]]; then
+          PR_BODY=$(gh pr view "$PR_NUMBER" --json body -q .body)
+          echo "PR_BODY=$PR_BODY"
+
+          if [[ "$PR_BODY" == *"- [ ] DB migrations"* ]]; then
             echo "allow_sql=false" >> $GITHUB_ENV
           fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Block merge if SQL files are found and task not approved
         run: |
           echo "found_sql=$found_sql"
           echo "allow_sql=$allow_sql"
-          echo "skip_check=$skip_check"
           
           if [[ "$found_sql" == "true" && "$allow_sql" == "false" ]]; then
-            echo "'Allow SQL files' task is not checked in the PR."
+            echo "'Applied DB migrations' task is not checked in the PR."
             exit 1
           fi
