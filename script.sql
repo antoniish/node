@@ -3,4 +3,5 @@ CREATE TABLE `user` (
   email1 VARCHAR(500) NOT NULL,
   pwd1 VARCHAR(128) NOT NULL
 
+
   );
