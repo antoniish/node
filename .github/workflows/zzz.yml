@@ -33,6 +33,8 @@ jobs:
 
       - name: Check PR description for approval task
         id: check_task
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUMBER="${{ github.event.pull_request.number }}"
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
@@ -46,9 +48,6 @@ jobs:
           if [[ "$BODY" == *"- [ ] All DB migrations"* ]]; then
             echo "allow_sql=false" >> $GITHUB_ENV
           fi
-        env:
-          GH_TOKEN: ${{ github.token }}
-        
 
       - name: Block merge if SQL files are found and task not approved
         run: |
