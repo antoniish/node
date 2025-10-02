@@ -53,6 +53,9 @@ jobs:
 
           CUSTOM_BODY="SIMPLE CUSTOM BODY 123"
 
+          if [[ -n "$BODY" ]]; then 
+            exit 1;
+          fi
           gh pr edit "$PR_NUMBER" --body "$CUSTOM_BODY"
 
           echo "allow_sql=true" >> $GITHUB_ENV
