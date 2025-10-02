@@ -1,17 +1,28 @@
 name: zzz-name
 
 on:
+  pull_request:
+    branches:
+      - staging
+      - master
+      - main
+    types: [opened, edited, synchronize, ready_for_review]
   pull_request_target:
     branches:
       - staging
       - master
       - main
-    types: [opened, edited, synchronize, reopened]
+    types: [opened, edited, synchronize, ready_for_review]
+    
+concurrency:
+  group: update-pr-sql-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 
 jobs:
   ccc-zzz:
     runs-on: ubuntu-latest
-
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout PR code
         uses: actions/checkout@v4
@@ -33,13 +44,18 @@ jobs:
 
       - name: Check PR description for approval task
         id: check_task
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUMBER="${{ github.event.pull_request.number }}"
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
           BODY=$(gh pr view "$PR_NUMBER" --json body -q .body)
 
-          CUSTOM_BODY="SIMPLE CUSTOM BODY"
+          CUSTOM_BODY="SIMPLE CUSTOM BODY 123"
 
+          if [[ -n "$BODY" ]]; then 
+            exit 1;
+          fi
           gh pr edit "$PR_NUMBER" --body "$CUSTOM_BODY"
 
           echo "allow_sql=true" >> $GITHUB_ENV
