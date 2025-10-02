@@ -45,7 +45,7 @@ jobs:
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
           BODY=$(gh pr view "$PR_NUMBER" --json body -q .body)
 
-          CUSTOM_BODY="SIMPLE CUSTOM BODY 123"
+          CUSTOM_BODY="SIMPLE CUSTOM BODY 777"
 
           gh pr edit "$PR_NUMBER" --body "$CUSTOM_BODY"
 
