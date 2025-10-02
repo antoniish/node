@@ -17,6 +17,8 @@ on:
 jobs:
   ccc-zzz:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
       - name: Checkout PR code
